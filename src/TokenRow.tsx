@@ -17,7 +17,7 @@ import { MsgExecuteContract, SecretNetworkClient } from "secretjs";
 import { sleep, viewingKeyErrorString, faucetAddress } from "./commons";
 import { Token } from "./config";
 import DepositWithdrawDialog from "./DepositWithdrawDialog";
-import { getKeplrViewingKey, setKeplrViewingKey } from "./KeplrStuff";
+import { getLeapViewingKey, setLeapViewingKey } from "./KeplrStuff";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -57,7 +57,7 @@ export default function TokenRow({
       return;
     }
 
-    const key = await getKeplrViewingKey(token.address);
+    const key = await getLeapViewingKey(token.address);
     if (!key) {
       setTokenBalance(viewingKeyErrorString);
       balances.set(token.address, viewingKeyErrorString);
@@ -213,7 +213,7 @@ export default function TokenRow({
             <div
               style={{ cursor: "pointer" }}
               onClick={async () => {
-                await setKeplrViewingKey(token.address);
+                await setLeapViewingKey(token.address);
                 try {
                   setLoadingTokenBalance(true);
                   await sleep(1000); // sometimes query nodes lag

@@ -58,7 +58,7 @@ export default function Withdraw({
 
   useEffect(() => {
     (async () => {
-      while (!window.keplr || !window.getOfflineSignerOnlyAmino) {
+      while (!window.leap || !window.getOfflineSignerOnlyAmino) {
         await sleep(100);
       }
 
@@ -66,23 +66,23 @@ export default function Withdraw({
       const { chain_id: targetChainId } =
         chains[token.withdrawals[selectedChainIndex].target_chain_name];
       if (token.withdrawals[selectedChainIndex].target_chain_name === "Terra") {
-        await suggestTerraToKeplr(window.keplr);
+        await suggestTerraToKeplr(window.leap);
       } else if (
         token.withdrawals[selectedChainIndex].target_chain_name === "Injective"
       ) {
-        await suggestInjectiveToKeplr(window.keplr);
+        await suggestInjectiveToKeplr(window.leap);
       } else if (
         token.withdrawals[selectedChainIndex].target_chain_name === "Crescent"
       ) {
-        await suggestCrescentToKeplr(window.keplr);
+        await suggestCrescentToKeplr(window.leap);
       } else if (
         token.withdrawals[selectedChainIndex].target_chain_name === "Kujira"
       ) {
-        await suggestKujiraToKeplr(window.keplr);
+        await suggestKujiraToKeplr(window.leap);
       }
 
-      await window.keplr.enable(targetChainId);
-      window.keplr.defaultOptions = {
+      await window.leap.enable(targetChainId);
+      window.leap.defaultOptions = {
         sign: {
           preferNoSetFee: false,
           disableBalanceCheck: true,

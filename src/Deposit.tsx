@@ -108,25 +108,25 @@ export default function Deposit({
 
   useEffect(() => {
     (async () => {
-      while (!window.keplr || !window.getOfflineSignerOnlyAmino) {
+      while (!window.leap || !window.getOfflineSignerOnlyAmino) {
         await sleep(100);
       }
 
       if ("LUNA" === token.name.toUpperCase()) {
-        await suggestTerraToKeplr(window.keplr);
+        await suggestTerraToKeplr(window.leap);
       } else if ("INJ" === token.name.toUpperCase()) {
-        await suggestInjectiveToKeplr(window.keplr);
+        await suggestInjectiveToKeplr(window.leap);
       } else if ("CRE" === token.name.toUpperCase()) {
-        await suggestCrescentToKeplr(window.keplr);
+        await suggestCrescentToKeplr(window.leap);
       } else if ("KUJI" === token.name.toUpperCase()) {
-        await suggestKujiraToKeplr(window.keplr);
+        await suggestKujiraToKeplr(window.leap);
       }
 
       // Initialize cosmjs on the target chain, because it has sendIbcTokens()
       const { chain_id, rpc, bech32_prefix } =
         chains[token.deposits[selectedChainIndex].source_chain_name];
-      await window.keplr.enable(chain_id);
-      window.keplr.defaultOptions = {
+      await window.leap.enable(chain_id);
+      window.leap.defaultOptions = {
         sign: {
           preferNoSetFee: false,
           disableBalanceCheck: true,

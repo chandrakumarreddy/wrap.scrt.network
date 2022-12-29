@@ -10,6 +10,12 @@ import { chains } from "./config";
 const SECRET_CHAIN_ID = chains["Secret Network"].chain_id;
 const SECRET_LCD = chains["Secret Network"].lcd;
 
+declare global {
+  interface Window {
+    leap: any;
+  }
+}
+
 export function KeplrPanel({
   secretjs,
   setSecretjs,
@@ -24,16 +30,22 @@ export function KeplrPanel({
   const [isCopied, setIsCopied] = useState<boolean>(false);
 
   // useEffect(() => {
-  //   setupKeplr(setSecretjs, setSecretAddress);
+  //   setupLeap(setSecretjs, setSecretAddress);
   // }, []);
 
   const content = (
     <div style={{ display: "flex", placeItems: "center", borderRadius: 10 }}>
       <Breakpoint small down style={{ display: "flex" }}>
-        <img src="/fina.webp" style={{ width: "1.8rem", borderRadius: 10 }} />
+        <img
+          src="https://assets.leapwallet.io/leap/cosmos.svg"
+          style={{ width: "1.8rem", borderRadius: 10 }}
+        />
       </Breakpoint>
       <Breakpoint medium up style={{ display: "flex" }}>
-        <img src="/keplr.svg" style={{ width: "1.8rem", borderRadius: 10 }} />
+        <img
+          src="https://assets.leapwallet.io/leap/cosmos.svg"
+          style={{ width: "1.8rem", borderRadius: 10 }}
+        />
       </Breakpoint>
       <span style={{ margin: "0 0.3rem" }}>
         <If condition={secretAddress.length > 0}>
@@ -83,7 +95,7 @@ export function KeplrPanel({
         id="keplr-button"
         variant="contained"
         style={{ background: "white", color: "black" }}
-        onClick={() => setupKeplr(setSecretjs, setSecretAddress)}
+        onClick={() => setupLeap(setSecretjs, setSecretAddress)}
       >
         {content}
       </Button>
@@ -91,7 +103,7 @@ export function KeplrPanel({
   }
 }
 
-async function setupKeplr(
+async function setupLeap(
   setSecretjs: React.Dispatch<React.SetStateAction<SecretNetworkClient | null>>,
   setSecretAddress: React.Dispatch<React.SetStateAction<string>>
 ) {
@@ -99,22 +111,23 @@ async function setupKeplr(
     new Promise((resolve) => setTimeout(resolve, ms));
 
   while (
-    !window.keplr ||
-    !window.getEnigmaUtils ||
-    !window.getOfflineSignerOnlyAmino
+    !window.leap ||
+    !window.leap.getEnigmaUtils ||
+    !window.leap.getOfflineSignerOnlyAmino
   ) {
     await sleep(50);
   }
 
-  await window.keplr.enable(SECRET_CHAIN_ID);
-  window.keplr.defaultOptions = {
+  await window.leap.enable(SECRET_CHAIN_ID);
+  window.leap.defaultOptions = {
     sign: {
       preferNoSetFee: false,
       disableBalanceCheck: true,
     },
   };
 
-  const keplrOfflineSigner = window.getOfflineSignerOnlyAmino(SECRET_CHAIN_ID);
+  const keplrOfflineSigner =
+    window.leap.getOfflineSignerOnlyAmino(SECRET_CHAIN_ID);
   const accounts = await keplrOfflineSigner.getAccounts();
 
   const secretAddress = accounts[0].address;
@@ -124,33 +137,34 @@ async function setupKeplr(
     chainId: SECRET_CHAIN_ID,
     wallet: keplrOfflineSigner,
     walletAddress: secretAddress,
-    encryptionUtils: window.getEnigmaUtils(SECRET_CHAIN_ID),
+    encryptionUtils: window.leap.getEnigmaUtils(SECRET_CHAIN_ID),
   });
 
   setSecretAddress(secretAddress);
   setSecretjs(secretjs);
 }
 
-export async function setKeplrViewingKey(token: string) {
-  if (!window.keplr) {
+export async function setLeapViewingKey(token: string) {
+  if (!window.leap) {
     console.error("Keplr not present");
     return;
   }
 
-  await window.keplr.suggestToken(SECRET_CHAIN_ID, token);
+  await window.leap.suggestToken(SECRET_CHAIN_ID, token);
 }
 
-export async function getKeplrViewingKey(
-  token: string
-): Promise<string | null> {
-  if (!window.keplr) {
+export async function getLeapViewingKey(token: string): Promise<string | null> {
+  if (!window.leap) {
     console.error("Keplr not present");
     return null;
   }
-
   try {
-    return await window.keplr.getSecret20ViewingKey(SECRET_CHAIN_ID, token);
+    console.log(SECRET_CHAIN_ID, token);
+    const key = await window.leap.getSecret20ViewingKey(SECRET_CHAIN_ID, token);
+    console.log(key);
+    return key;
   } catch (e) {
+    console.log(e);
     return null;
   }
 }
